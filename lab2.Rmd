@@ -1,0 +1,151 @@
+---
+title: "Lab 2"
+author: "[Student Name]"
+date: "05-26-20"
+output: 
+  html_document:
+    toc: true
+    number_sections: false
+    toc_float: true
+    df_print: paged
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, comment = NA, 
+                      message = FALSE, warning = FALSE)
+```
+
+# Part 1: Data wrangling
+
+## Introduction
+
+The stop-question-and-frisk (sqf) program, in New York City, is a practice of 
+temporarily detaining, questioning, and at times searching civilians and 
+suspects. In 2011, the program peaked with a total of 685,724 sqf events.
+
+The NYPD contains data records on every sqf event throughout the program's
+history. In this exam we will work with the 2011 sqf data. 
+All yearly data and more information about the stop-question-and-frisk 
+program can be found at 
+https://www1.nyc.gov/site/nypd/stats/reports-analysis/stopfrisk.page.
+
+## Packages
+
+```{r packages}
+library(tidyverse)
+library(jsonlite)
+```
+
+## Data
+
+To get started, read in the data. Each row represents a single sqf event in 
+2011.
+
+```{r read_sqf}
+sqf <- readRDS("data/sqf_2011.rds")
+```
+
+Use object `sqf` to complete the following tasks.
+
+Consult the data dictionary in folder `data_dictionary` of your repo. 
+The xlsx file has two tabs with variable descriptions and encoding for every 
+variable.
+
+## Tasks
+
+Use functions in package `tidyverse` (`dplyr` and `tidyr`) unless there is 
+no Base-R equivalent. Your code should output only the necessary rows and 
+variables from the data frame to answer the question or complete the task. 
+If the answer is a single number, the result in vector format is fine.
+
+#### Task 1
+
+How many individuals were frisked or searched in the month of August
+by precinct 40?
+
+#### Task 2
+
+Create a new variable called `season` according to the following rule
+
+  + spring - March through May
+  + summer - June through August
+  + fall   - September through November
+  + winter - December through February
+      
+for when an sqf event occurred. Using this new variable, for each season,
+what proportion of individuals were frisked for inappropriate attire?
+
+#### Task 3
+   
+Compute the probability of being involved in an sqf incident for each
+race. Compute the conditional probability of being arrested given each
+race. For each result, sort the probabilities in descending order.
+   
+#### Task 4   
+   
+What was the most common "reason for stop"?
+
+#### Task 5
+
+Compute the median age for those involved in an sqf event for each day of the
+week (Sunday - Saturday). *Hint:* Look at functions `mday()`, `month()`,
+`day()`, and `wday()` in package `lubridate`. Make a reasonable decision on
+how to deal with the obvious incorrect age values.
+   
+# Part 2: Functionals
+
+## Data
+
+Open Brewery DB is a free API for public information on breweries, cideries, 
+brewpubs, and bottleshops. We'll look at a subset of breweries in NC. Later
+in this course we'll discuss APIs and how to work with them. For now, read in
+the below data. Object `nc_brew` will be a list.
+
+```{r get_nc_brew}
+url <- "https://api.openbrewerydb.org/breweries?by_state=north%20carolina&page=1"
+nc_brew <- read_json(url)
+```
+
+## Tasks
+
+#### Task 1
+
+Print the structure for only the first brewery in the list.
+
+#### Task 2
+
+Use a `for` loop to get the name of each brewery and the URL. Put your result
+in a data frame.
+
+#### Task 3
+
+Repeat Task 2, but use an `apply()` function rather than a `for` loop.
+
+#### Task 4
+
+Repeat Task 2, but use a `map*()` function rather than a `for` loop.
+
+#### Task 5
+
+There are many more breweries in NC than what we have in `nc_brew`. We can see
+more of them by changing the page number in the URL. For example,
+https://api.openbrewerydb.org/breweries?by_state=north%20carolina&page=2 will
+show all the breweries on "page 2". The below function will allow you to
+get the breweries on any specified page.
+
+```{r get_breweries}
+get_breweries <- function(page = 1) {
+  base_url <- "https://api.openbrewerydb.org/breweries?by_state=north%20carolina&page="
+  url <- str_c(base_url, page)
+  
+  read_json(url)
+}
+```
+
+Use a `map*()` function to get all the breweries on the first 10 pages. Save the
+result as an object named `nc_breweries_200`.
+
+#### Task 6
+
+Use a `map*()` function to get the name for each brewery in `nc_breweries_200`.
+Have your final result be a character vector of length 200.
