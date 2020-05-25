@@ -33,6 +33,7 @@ https://www1.nyc.gov/site/nypd/stats/reports-analysis/stopfrisk.page.
 
 ```{r packages}
 library(tidyverse)
+library(lubridate)
 library(jsonlite)
 ```
 
